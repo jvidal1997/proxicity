@@ -1,0 +1,3 @@
+# Local configs
+.env.local
+deprecated/
