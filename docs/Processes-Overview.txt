@@ -1,0 +1,24 @@
+Program Requirements
+    - Read XLSX file into DataFrame object
+    - Remove unnecessary columns
+    - Compute distance between listings and their nearest city-center/landmark, then add to their respective column
+    - Create scatter plots to display asking-price by relative distance to the nearest city center
+    - Build linear regression models to display differences in price according to proximity to city-center/landmark
+    - Build a heatmap to display asking-prices and city-center/landmark information interactively
+
+Sub-Processes
+    1. Read XLSX file into DataFrame object & remove unnecessary columns:
+        - Use Pandas library to read, filter, and convert file into DataFrame.
+    2. Use API requests to compile lists of nearby city-centers and landmarks for each listing
+        - Use Nominatim to generate nearby city-center (1 request per sec., User-Agent header required)
+            i. Needs to perform 3558 queries and return coordinates for 3558 city-centers
+            ii. Must implement rate-limiting
+            iii. Must cache results
+        - Use Overpass to generate nearby landmarks (10k max requests, 1GB max volume per day)
+            i. Must perform 50 bulk search for landmarks; one for each state
+            ii. Must search each area for "tourism", "amenity", "historic", and "leisure" tagged nodes
+            iii. Must implement rate-limiting (1.5 sec. throttle, 3 max-retries, 5 sec. retry-delay)
+            iv. Must cache results
+    3. Compute distance between listings and their nearest city-center and landmark, then add to their columns
+
+    4. Compute the mean asking price by month and store

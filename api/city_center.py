@@ -3,7 +3,7 @@ import json
 import time
 import requests
 from tqdm import tqdm
-from settings.Settings import settings
+from Settings import ENV as PROPERTY
 
 class CityCentersClient:
     def __init__(self, cache_file="cache/city_centers_cache.json", request_delay=1.1, max_retries=3, backoff_factor=2):
@@ -30,13 +30,13 @@ class CityCentersClient:
             return self.cache[key]
 
         params = {"q": f"{city}, {state}, USA", "format": "json", "limit": 1, "addressdetails": 0}
-        headers = {"User-Agent": f"{settings.PROJECT_TITLE} ({settings.EMAIL})"}
+        headers = {"User-Agent": f"COMSC 230: Final Project ({PROPERTY["EMAIL"]})"}
 
         data = {}
         for attempt in range(1, self.max_retries + 1):
             try:
                 time.sleep(self.request_delay)
-                response = requests.get(settings.NOMINATIM_API, params=params, headers=headers, timeout=20)
+                response = requests.get(PROPERTY["NOMINATIM_API"], params=params, headers=headers, timeout=20)
                 response.raise_for_status()
                 data = response.json()
                 break
@@ -58,7 +58,7 @@ class CityCentersClient:
     def generate_all_city_centers(self, df):
         centers = {}
         unique_pairs = df[['cityname', 'state']].drop_duplicates().values
-        for city, state in tqdm(unique_pairs, desc="Fetching city centers"):
+        for city, state in tqdm(unique_pairs, desc="Fetching city centers", colour="green"):
             centers[f"{city}, {state}"] = self.fetch_city_center(city, state)
         return centers
 

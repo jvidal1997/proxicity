@@ -4,8 +4,7 @@ import time
 import random
 import requests
 from tqdm import tqdm
-from settings.Settings import settings
-
+from Settings import ENV as PROPERTY
 
 class LandmarksClient:
     def __init__(
@@ -69,7 +68,7 @@ class LandmarksClient:
         out center;
         """
 
-        headers = {"User-Agent": f"{settings.PROJECT_TITLE} ({settings.EMAIL})"}
+        headers = {"User-Agent": f"COMSC 230: Final Project ({PROPERTY["EMAIL"]})"}
 
         data = []
         # Retry logic

@@ -1,0 +1,60 @@
+Import Details:
+
+1. Pandas
+    Use: Data Manipulation
+    Important Functions:
+        Static
+            + read_excel(`${file-path}.xlsx`): DataFrame
+            + to_datetime(time): Series object
+        Data Instance
+            + head(): String
+            + info(): String
+            + describe(): String
+            + month(): String
+            + apply(_, axis): _
+            + mean(): Float
+            + astype(`${type}`): void
+
+2. Numpy
+    Use: Calculations
+    Important Functions:
+        Static
+            nan(): null
+3. MatPlotLib
+    Use: Plotting
+    Important Functions:
+        Static
+            title("${title}"): void
+            show(): void
+4. Seaborn
+    Use: Plotting
+    Important Functions:
+        Static
+            boxplot(x, y, data): _
+            scatterplot(x, y, data): _
+            regplot(x, y, data): _
+5. Geopy
+    Use: Distances
+    Important Functions:
+        Static
+            + Geopy(location<longitude, latitude>, location<longitude, latitude>): _
+            + km(): _
+6. StatsModels
+    Use: Regression Modeling
+    Important Functions:
+        Static
+            ols(formula, data): _
+            fit(): _
+            summary(): _
+
+7. Folium
+    Use: Heatmap Modeling
+    Important Functions:
+        Static
+            + Map(location<latitude, longitude>, zoom_start): Map object
+            + CircleMarker(location<latitude, longitude>, radius, color, fill, fill_opacity, popup): void
+            + add_to(Map object): void
+        Map Instance
+            + save(`${filename}.html): void
+
+8. OpenPyXL (required for Pandas)

@@ -1,0 +1,29 @@
+Columns Required:
+    - price
+    - time
+    - latitude
+    - longitude
+    - cityname
+    - state
+
+Problematic Columns:
+    - price_type (must be monthly)
+
+Cleaning Processes:
+    a. Remove the following unrelated columns:
+        - category
+        - title
+        - body
+        - amenities
+        - bathrooms
+        - currency
+        - fee
+        - has_photo
+        - pets allowed
+        - price_display
+        - square_feet
+        - address
+        - source
+
+    b. Filter out rows where:
+        - price_type != monthly

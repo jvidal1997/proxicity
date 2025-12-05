@@ -5,10 +5,20 @@ from visualization.plot_generator import scatter, heatmap, plot3d
 from visualization.interactive_map import InteractiveMapBuilder
 from analysis.regression import run_ols_models
 from export.exporter import export_summary, export_correlation
-from settings.Settings import settings
+import importlib, Settings
+
+# Force reload in sys.modules to reread .env
+importlib.reload(Settings)
+
+# Access reloaded env
+PROPERTY = Settings.ENV
+print(PROPERTY)
+print()
+
+
 
 # Load and clean data
-df = load_and_clean_data(settings.INPUT_DATASET, settings.RELEVANT_COLUMNS)
+df = load_and_clean_data(PROPERTY["INPUT_DATASET"], PROPERTY["RELEVANT_COLUMNS"])
 
 # Fetch coordinates
 city_client, landmark_client = create_clients()
@@ -20,12 +30,12 @@ df = append_apartments_with_nearest(
     df,
     city_centers,
     landmarks_by_city,
-    cache_dir=settings.BALLTREE_CACHE_DIR
+    cache_dir=PROPERTY["BALLTREE_CACHE_DIR"]
 )
 
 # Export stats & correlation
-export_summary(df, settings.STAT_SUMMARY_PATH)
-export_correlation(df, settings.CORRELATION_SUMMARY_PATH)
+export_summary(df, PROPERTY["STAT_SUMMARY_PATH)"])
+export_correlation(df, PROPERTY["CORRELATION_SUMMARY_PATH)"])
 
 # Generate plots
 scatter(df, "Price vs Distance to Nearest City Center", "nearest_city_center_miles", "price")
@@ -36,10 +46,10 @@ heatmap(df, "Correlation Heatmap")
 # Generate interactive heatmap
 map_builder = InteractiveMapBuilder(city_centers, landmarks_by_city, df)
 map_builder.build_map()
-map_builder.save(settings.INTERACTIVE_MAP_PATH)
+map_builder.save(PROPERTY["INTERACTIVE_MAP_PATH"])
 
 # Run regression models
 run_ols_models(df)
 
 # Save clean dataset
-save_xlsx(df, settings.CLEAN_DATASET_PATH)
+save_xlsx(df, PROPERTY["CLEAN_DATASET_PATH"])

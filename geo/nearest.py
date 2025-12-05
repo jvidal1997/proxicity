@@ -1,8 +1,7 @@
 import numpy as np
 from numpy.typing import ArrayLike
 from sklearn.neighbors import BallTree
-
-EARTH_RADIUS_MILES = 3958.8
+from Settings import ENV as PROPERTY
 
 
 def _validate_coords(coords: tuple[float, float] | None) -> bool:
@@ -51,4 +50,4 @@ def query_balltree(tree, point) -> tuple[float, None] | tuple[float, int]:
         return np.nan, None
 
     dist, idx = tree.query(np.radians([point]), k=1)
-    return float(dist[0][0] * EARTH_RADIUS_MILES), int(idx[0][0])
+    return float(dist[0][0] * PROPERTY["EARTH_RADIUS_MILES"]), int(idx[0][0])

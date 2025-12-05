@@ -1,11 +1,11 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
-from settings.Settings import settings
+from Settings import ENV as PROPERTY
 
 
 def scatter(df, title, xlabel, ylabel):
     title = title.replace(' ', '_')
-    save_path = f"{settings.FIGURES_DIR}/{title}.svg".lower()
+    save_path = f"{PROPERTY["FIGURES_DIR"]}/{title}.svg".lower()
     plt.figure(figsize=(10, 6))
     sns.scatterplot(x=xlabel, y=ylabel, data=df)
     sns.regplot(x=xlabel, y=ylabel, data=df, scatter=False, color='red')
@@ -19,7 +19,7 @@ def scatter(df, title, xlabel, ylabel):
 
 def plot3d(df, title, xlabel, ylabel, zlabel, xunit, yunit, zunit):
     title = title.replace(' ', '_')
-    save_path = f"{settings.FIGURES_DIR}/{title}.svg".lower()
+    save_path = f"{PROPERTY["FIGURES_DIR"]}/{title}.svg".lower()
     fig = plt.figure(figsize=(10, 7))
     ax = fig.add_subplot(111, projection='3d')
     ax.scatter(df[xlabel], df[ylabel], df[zlabel], c="red",
@@ -32,10 +32,11 @@ def plot3d(df, title, xlabel, ylabel, zlabel, xunit, yunit, zunit):
     print("Saving 3D relationship plot...")
     plt.savefig(save_path, orientation='landscape', bbox_inches='tight', format="svg",
                 dpi=300)
-    print(f"3D relationship plot saved: {settings.FIGURES_DIR}/3d_price_distance_plot.svg")
+    print(f"3D relationship plot saved: {PROPERTY["FIGURES_DIR"]}/3d_price_distance_plot.svg")
     print()
     plt.show()
     plt.close()
+
 
 def heatmap(df, title):
     title = title.replace(' ', '_')
@@ -50,9 +51,9 @@ def heatmap(df, title):
     print("Build successful.")
 
     print("Saving correlation heatmap...")
-    plt.savefig(f"{settings.FIGURES_DIR}/{title}.svg".lower(), orientation='landscape', bbox_inches='tight', format="svg",
+    plt.savefig(f"{PROPERTY["FIGURES_DIR"]}/{title}.svg".lower(), orientation='landscape', bbox_inches='tight', format="svg",
                 dpi=300)
-    print(f"Correlations heatmap saved: {settings.FIGURES_DIR}/{title}.svg")
+    print(f"Correlations heatmap saved: {PROPERTY["FIGURES_DIR"]}/{title}.svg")
     print()
 
     plt.show()

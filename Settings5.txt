@@ -1,0 +1,64 @@
+import os
+import re
+from pathlib import Path
+from dotenv import load_dotenv, dotenv_values
+
+
+class Settings:
+    _env = {}
+
+    @staticmethod
+    def parse_value(value: str):
+        """Convert strings to Python types automatically."""
+        value = value.strip()
+
+        # 1. Parse comma-separated arrays
+        if "," in value:
+            return [v.strip() for v in value.split(",")]
+
+        # 2. Convert booleans
+        lower = value.lower()
+        if lower == "true":
+            return True
+        if lower == "false":
+            return False
+
+        # 3. Convert integers
+        if value.isdigit():
+            return int(value)
+
+        # 4. Convert floats
+        try:
+            return float(value)
+        except ValueError:
+            pass
+
+        # 5. Detect email addresses
+        email_pattern = r"^[\w\.-]+@[\w\.-]+\.\w+$"
+        if re.match(email_pattern, value):
+            return value  # optionally you could return a validated email object
+
+        # Otherwise return raw string
+        return f"{Path(__file__).resolve().parent}\\{value}"
+
+    @classmethod
+    def __getattr__(cls, key):
+        # Attribute-style access: Settings.VAR
+        if key in cls._env:
+            return cls._env[key]
+        raise AttributeError(f"{key} not found in Settings")
+
+    @classmethod
+    def __getitem__(cls, key):
+        # Dict-style access: Settings['VAR']
+        if key in cls._env:
+            return cls._env[key]
+        raise AttributeError(f"{key} not found in Settings")
+
+    # Pick .env.dev if it exists, else .env
+    ROOT = Path(__file__).resolve().parent
+    env_file = f"{ROOT}\\.env.dev" if (os.path.exists(f"{ROOT}\\.env.dev")) else ROOT / ".env"
+    map = dotenv_values(dotenv_path=env_file)
+    for key in map:
+        _env[key] = parse_value(map.get(key))
+        print(f"{key} -> {_env[key]}")
