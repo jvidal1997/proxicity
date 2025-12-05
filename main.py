@@ -12,8 +12,8 @@ importlib.reload(Settings)
 
 # Access reloaded env
 PROPERTY = Settings.ENV
-print(PROPERTY)
-print()
+# print(PROPERTY)
+# print()
 
 
 
