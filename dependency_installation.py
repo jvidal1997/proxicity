@@ -9,7 +9,12 @@ import subprocess
 import sys
 import os
 
+
 def main():
+    """
+    Main function to auto-install Python dependencies from requirements.txt. Changes to the script directory,
+    upgrades pip, and installs all packages listed in requirements.txt. Exits with an error if the file is missing.
+    """
     project_dir = os.path.dirname(os.path.abspath(__file__))
     os.chdir(project_dir)
 

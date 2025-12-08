@@ -1,8 +1,23 @@
+"""
+Provides functionality to run ordinary least squares (OLS) regression analyses on apartment/listing data.
+Includes four models examining the relationship between apartment prices and distances to city centers and landmarks.
+Each model summary is saved as a text file and printed to the console.
+
+Functions:
+- run_ols_models(df): Runs four OLS regression models on the DataFrame and saves/prints their summaries.
+"""
 import statsmodels.formula.api as smf
 from Settings import ENV as PROPERTY
 
 
 def run_ols_models(df):
+    """
+    Runs four ordinary least squares (OLS) regression models on the DataFrame to analyze the relationship between
+    apartment prices and distances to city centers and landmarks.
+
+    Saves each model summary as a text file in the configured models directory and prints the summaries to the console.
+    :param df: DataFrame of apartment prices and distances to city centers and landmarks.
+    """
     # Model 1: Price v. Distance to City Center
     print("Building regression models...(1/4)")
     model1 = smf.ols('price ~ nearest_city_center_miles', data=df).fit()

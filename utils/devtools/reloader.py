@@ -1,3 +1,11 @@
+"""
+Module for hot-reloading all project modules during development.
+
+Provides a utility function `reload_everything()` that reloads all Python modules
+under the project package (defined by `PROJECT_ROOT`) in top-down order, ensuring
+parent packages are reloaded before submodules. Useful for iterative development
+and testing without restarting the Python interpreter.
+"""
 import importlib
 import sys
 from types import ModuleType
@@ -21,13 +29,13 @@ def reload_everything():
     # Sort so parent packages reload before submodules
     modules_to_reload.sort(key=lambda pair: pair[0].count("."))
 
-    print("\n🔄 Reloading project modules...\n")
+    print("\nReloading project modules...\n")
 
     for name, module in modules_to_reload:
         try:
             importlib.reload(module)
-            print(f"  ✔ reloaded {name}")
+            print(f"Reloaded {name}")
         except Exception as e:
-            print(f"  ❌ FAILED to reload {name}: {e}")
+            print(f"FAILED to reload {name}: {e}")
 
-    print("\n✨ Reload complete.\n")
+    print("\nReload complete.\n")

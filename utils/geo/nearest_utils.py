@@ -1,14 +1,57 @@
-# geo/nearest_utils.py
+"""
+Nearest Neighbor Utilities for Apartments, Cities, and Landmarks
+================================================================
+
+This module provides helper functions to efficiently compute distances between
+apartments, city centers, and landmarks using BallTree nearest-neighbor queries.
+It includes caching mechanisms to avoid rebuilding BallTrees for repeated runs
+and integrates with pandas for vectorized operations.
+
+Key Functions
+-------------
+- `_get_cache_path(cache_dir, key)`
+  Generates a safe file path for caching a BallTree, creating the directory if needed.
+
+- `build_or_load_balltree(coords_list, cache_dir=None, cache_key=None)`
+  Builds a BallTree from coordinates or loads it from a cached file if available.
+
+- `_compute_city_tree(city_centers, cache_dir)`
+  Filters valid city coordinates and returns a BallTree for city centers and the set of valid keys.
+
+- `_compute_landmark_trees(landmarks_by_city, cache_dir)`
+  Filters valid landmark coordinates for each city and returns a dict of BallTrees and their coordinate arrays/names.
+
+- `append_apartments_with_nearest(df, city_centers, landmarks_by_city, cache_dir=None)`
+  Adds nearest city center and landmark distances (in miles) to a DataFrame of apartments.
+  Returns a new DataFrame with additional columns:
+    - `nearest_city_center_miles`
+    - `nearest_landmark_miles`
+    - `nearest_landmark_name`
+
+Notes
+-----
+- Distances are computed using haversine metric via BallTree.
+- Coordinates must be validated with `_validate_coords` before building trees.
+- Dependencies: `numpy`, `pandas`, `tqdm`, `joblib`, and the `geo.nearest` module.
+- BallTrees are cached using pickle files to `cache_dir` for performance.
+"""
 import os
 import re
 import numpy as np
 import joblib
 from tqdm import tqdm
 import pandas as pd
-from geo.nearest import _validate_coords, build_balltree, query_balltree
+from utils.geo.nearest import _validate_coords, build_balltree, query_balltree
 
 
 def _get_cache_path(cache_dir: str, key: str) -> str:
+    """
+    Generates a safe file path for caching a BallTree. Creates the directory if it does not exist.
+    Replaces invalid characters in the key with underscores.
+    :param cache_dir: Directory to cache BallTree data for.
+    :param key: str | None by default.
+    :return: Path to the cached BallTree file.
+    """
     os.makedirs(cache_dir, exist_ok=True)
     safe_key = re.sub(r"[^\w\-]", "_", key)
     return os.path.join(cache_dir, f"{safe_key}_tree.pkl")
@@ -37,6 +80,13 @@ def build_or_load_balltree(coords_list: list, cache_dir: str = None, cache_key: 
 
 
 def _compute_city_tree(city_centers, cache_dir):
+    """
+    Filters city centers to keep only valid coordinates and builds or loads a BallTree for nearest-neighbor queries.
+    Returns the BallTree and a set of city keys with valid coordinates.
+    :param city_centers: DataFrame of city centers.
+    :param cache_dir: Directory to cache BallTree data for.
+    :return: BallTree and a set of city keys with valid coordinates.
+    """
     city_keys, city_coords = [], []
     for key, coords in city_centers.items():
         if coords and _validate_coords((coords['lat'], coords['lon'])):
@@ -47,6 +97,13 @@ def _compute_city_tree(city_centers, cache_dir):
 
 
 def _compute_landmark_trees(landmarks_by_city, cache_dir):
+    """
+    Filters landmarks by city to include only valid coordinates, builds or loads a BallTree for each city, and returns
+    dictionaries mapping city keys to BallTrees and to coordinate/name data for valid landmarks.
+    :param landmarks_by_city: DataFrame of landmarks by city.
+    :param cache_dir: Directory to cache BallTree data for.
+    :return: BallTree and a set of city keys with valid coordinates.
+    """
     landmark_trees, landmark_coords = {}, {}
     for city_key, lms in landmarks_by_city.items():
         valid_coords, valid_names = [], []
@@ -67,7 +124,16 @@ def _compute_landmark_trees(landmarks_by_city, cache_dir):
 
 def append_apartments_with_nearest(df: pd.DataFrame, city_centers: dict, landmarks_by_city: dict, cache_dir: str = None) -> pd.DataFrame:
     """
-    Add nearest city center and landmark distances to apartment DataFrame.
+    Computes nearest city center and landmark distances for each apartment in the DataFrame.
+    Returns a new DataFrame with additional columns: nearest_city_center_miles, nearest_landmark_miles, nearest_landmark_name.
+    :param df: DataFrame containing apartment coordinates.
+    :param city_centers: Dictionary of city centers.
+    :param landmarks_by_city: Dictionary of landmark coordinates.
+    :param cache_dir: Directory to cache BallTree data for.
+    :return: New DataFrame with additional columns:
+        - `nearest_city_center_miles`
+        - `nearest_landmark_miles`
+        - `nearest_landmark_name`
     """
     df = df.copy()
     city_tree, city_keys = _compute_city_tree(city_centers, cache_dir)
