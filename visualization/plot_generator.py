@@ -15,6 +15,17 @@ from utils.devtools.multithread_logger import AsyncFileLogger
 log = AsyncFileLogger()
 
 
+def histogram(df, column_label, title, xlabel, ylabel):
+    fig, ax = plt.subplots()
+    df[column_label].plot(kind="hist", bins=20, ax=ax)
+
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    ax.set_title(title)
+
+    fig.savefig(f"{PROPERTY['FIGURES_DIR']}/{title}.png", dpi=300, bbox_inches="tight")
+
+
 def scatter(df, title, xlabel, ylabel):
     """
     Generates a 2D scatter plot with a regression line from the DataFrame.
@@ -63,8 +74,7 @@ def plot3d(df, title, xlabel, ylabel, zlabel, xunit, yunit, zunit):
 
     fig = plt.figure(figsize=(10, 7))
     ax = fig.add_subplot(111, projection='3d')
-    ax.scatter(df[xlabel], df[ylabel], df[zlabel], c="red",
-               cmap='viridis', s=20, alpha=0.8)
+    ax.scatter(df[xlabel], df[ylabel], df[zlabel], c="red", s=20, alpha=0.8)
     ax.set_xlabel(f"{xlabel} {xunit}")
     ax.set_ylabel(f"{ylabel} {yunit}")
     ax.set_zlabel(f"{zlabel} {zunit}")

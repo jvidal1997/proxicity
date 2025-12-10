@@ -62,8 +62,9 @@ Dependencies:
 """
 from utils.dataio.data_io import load_and_clean_data, save_xlsx
 from api.clients import create_clients
+from utils.devtools.checkLandmarkCacheSize import checkLandmarkCacheSize
 from utils.geo.nearest_utils import append_apartments_with_nearest
-from visualization.plot_generator import scatter, heatmap, plot3d
+from visualization.plot_generator import scatter, heatmap, plot3d, histogram
 from visualization.interactive_map import InteractiveMapBuilder
 from visualization.regression import run_ols_models
 import importlib, Settings
@@ -94,6 +95,7 @@ try:
         log.error("Could not load and clean data")
         raise e
 
+    print(df.describe())
     # Fetch coordinates
     try:
         try:
@@ -133,6 +135,28 @@ try:
     # Clean data again
     df = df[(df['nearest_city_center_miles'] < PROPERTY['MAX_MILE_RANGE']) & (df['nearest_landmark_miles'] < PROPERTY['MAX_MILE_RANGE'])]
 
+    # Generate summary stubs for Price, City-center distance, and Landmark distance
+    print(f"Price Mean: {df['price'].mean()}")
+    print(f"Price Median: {df['price'].median()}")
+    print(f"Price Standard Deviation: {df['price'].std()}")
+    print()
+    print(f"City-center Distance Mean: {df['nearest_city_center_miles'].mean()}")
+    print(f"City-center Distance Median: {df['nearest_city_center_miles'].median()}")
+    print(f"City-center Distance Standard Deviation: {df['nearest_city_center_miles'].std()}")
+    print()
+    print(f"Landmark Distance Mean: {df['nearest_landmark_miles'].mean()}")
+    print(f"Landmark Distance Median: {df['nearest_landmark_miles'].median()}")
+    print(f"Landmark Distance Standard Deviation: {df['nearest_landmark_miles'].std()}")
+    print()
+
+    # Generate histograms
+    try:
+        histogram(df, "price", "Frequency of Prices", "Price (USD)", "Frequency")
+        histogram(df, "nearest_city_center_miles", "Distribution of City Center Distances", "Distance (mi)", "Frequency")
+        histogram(df, "nearest_landmark_miles", "Distribution of Landmark Distances", "Distance (mi)", "Frequency")
+    except Exception as _:
+        raise RuntimeError("Could not calculate price histogram")
+
     # Generate plots with linear regression
     try:
         log.info("Generating scatter plots...")
@@ -142,11 +166,11 @@ try:
     except Exception as _:
         raise RuntimeError("Scatter plot generation failed.")
 
-    if PROPERTY["ADVANCED_PLOTTING"]:
+    if PROPERTY['ADVANCED_PLOTTING']:
         # Generate 3D plot
         try:
             log.info("Plotting 3D Plot...")
-            plot3d(df, "3D Plot Prices vs Distances", "nearest_city_center_miles", "price", "nearest_landmark_miles", "(mi)", "(mi)", "($USD)")
+            plot3d(df, "3D Plot Prices vs Distances", "nearest_city_center_miles", "nearest_landmark_miles","price", "(mi)", "(mi)", "($USD)")
             log.info("3D Plot successfully exported...")
         except Exception as _:
             raise RuntimeError("Could not create 3D plot")
@@ -182,7 +206,7 @@ try:
     # Save clean dataset
     try:
         log.info("Exporting final data stream")
-        save_xlsx(df, PROPERTY["CLEAN_DATASET_PATH"])
+        save_xlsx(df, PROPERTY["CLEAN_DATA_EXPORT_PATH"])
         log.info("Final data stream successfully exported.")
     except Exception as _:
         raise RuntimeError("Could not export final data stream")

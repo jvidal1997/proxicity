@@ -42,38 +42,43 @@ class InteractiveMapBuilder:
 
         # Feature groups
         log.info("Creating feature groups...")
-        city_group = folium.FeatureGroup(name="City Centers")
-        landmark_group = folium.FeatureGroup(name="Landmarks")
+        # city_group = folium.FeatureGroup(name="City Centers")
+        # landmark_group = folium.FeatureGroup(name="Landmarks")
         price_heatmap = folium.FeatureGroup(name="Price Heatmap")
         density_heatmap = folium.FeatureGroup(name="Listing Density Heatmap")
         log.info("Groups created.")
 
-        # City Center Markers
-        log.info("Building city-center markers layer...")
-        for city_key, coords in tqdm(self.city_centers.items(), desc="Building city-center markers layer...", colour="green"):
-            if coords is None:
-                continue
-            folium.Marker(
-                location=[coords["lat"], coords["lon"]],
-                popup=city_key,
-                icon=folium.Icon(color="red", icon="glyphicon glyphicon-home")
-            ).add_to(city_group)
-        log.info("City-center markers layer created.")
-
-        # Landmark Markers
-        log.info("Building landmark markers layer...")
-        for city_key, items in tqdm(self.landmarks.items(), desc="Building landmark markers layer...", colour="green"):
-            if not items:
-                continue
-            for lm in items:
-                if lm["lat"] is None or lm["lon"] is None:
-                    continue
-                folium.Marker(
-                    location=[lm["lat"], lm["lon"]],
-                    popup=lm["name"] or "Unknown Landmark",
-                    icon=folium.Icon(color="green", icon="glyphicon glyphicon-star")
-                ).add_to(landmark_group)
-        log.info("Landmark markers layer created.")
+        # # City Center Markers
+        # log.info("Building city-center markers layer...")
+        # for city_key in tqdm(self.city_centers, desc="Building city-center markers layer...", colour="green"):
+        #     log.info(f"Adding marker: {city_key}, [{self.city_centers[city_key]["lat"]}, {self.city_centers[city_key]["lon"]}]")
+        #     if city_key is None:
+        #         continue
+        #     if self.city_centers[city_key] is None:
+        #         continue
+        #     if self.city_centers[city_key]["lat"] is None or self.city_centers[city_key]["lon"] is None:
+        #         continue
+        #     folium.Marker(
+        #         location=[self.city_centers[city_key]["lat"], self.city_centers[city_key]["lon"]],
+        #         popup=city_key,
+        #         icon=folium.Icon(color="red", icon="glyphicon glyphicon-home")
+        #     ).add_to(city_group)
+        # log.info("City-center markers layer created.")
+        #
+        # # Landmark Markers
+        # log.info("Building landmark markers layer...")
+        # for city_key, items in tqdm(self.landmarks.items(), desc="Building landmark markers layer...", colour="green"):
+        #     if not items:
+        #         continue
+        #     for lm in items:
+        #         if lm["lat"] is None or lm["lon"] is None:
+        #             continue
+        #         folium.Marker(
+        #             location=[lm["lat"], lm["lon"]],
+        #             popup=lm["name"] or "Unknown Landmark",
+        #             icon=folium.Icon(color="green", icon="glyphicon glyphicon-star")
+        #         ).add_to(landmark_group)
+        # log.info("Landmark markers layer created.")
 
         # Price Heatmap
         log.info("Building price heatmap layer...")
@@ -99,8 +104,8 @@ class InteractiveMapBuilder:
 
         # Attach Layers
         log.info("Attaching layers...")
-        city_group.add_to(self.map)
-        landmark_group.add_to(self.map)
+        # city_group.add_to(self.map)
+        # landmark_group.add_to(self.map)
         price_heatmap.add_to(self.map)
         density_heatmap.add_to(self.map)
         log.info("Layers added.")
